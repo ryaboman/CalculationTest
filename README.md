@@ -1,6 +1,6 @@
 # Calculation
 
-<img src="imgs/app.JPG" width="500">
+<img src="imgs/app.JPG">
 
 ## Задача
 На языке С++ или С# (на выбор, чем лучше владеете) написать
