@@ -2,24 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Data;
 
 
 namespace Calculation.bll {
     public class Expression {
-        private Stack<float> stackOfNumbers = new Stack<float>();
+        private Stack<double> stackOfNumbers = new Stack<double>();
         private Stack<char> stackOfOperator = new Stack<char>();
         private string expression = string.Empty;
 
         public Expression(string expression) {
             this.expression = expression;
+            
         }
 
-        public float Calculation() {           
+
+        public double Calculation() {
+
             string numberOfExpression = string.Empty;
             string functionOfExpression = string.Empty;
             bool flagOfNegativeNumber = false;
-            float result = 0;
+            double result = 0;
 
             for (var index = 0; index < expression.Length; index++) {
                 char symbol = expression[index];
@@ -28,18 +31,30 @@ namespace Calculation.bll {
                     symbol = ',';
                 }
 
+                
+                
+
                 //Обработка числа
+                //Если число или , и при этом не последний элемент,
+                //То доавим число и пейдем к следующему циклу
                 if ( (Char.IsDigit(symbol) || (symbol == ',')) && ((index + 1) < expression.Length) )  {                    
                     numberOfExpression += symbol;
                     continue;
                 }
                 else {
+                    //Если мы зашли сюда, значит у нас символ не числовой либо последний символ выражения
+                    
+                    //Если символ числовой, значит он последений в выражении и
+                    //поэтому добавим его
                     if ( Char.IsDigit(symbol) ){
                         numberOfExpression += symbol;
                     }
 
+                    //Парсим число
+                    //В любом случае и при последнем числом символе и при не числом символе
+                    //считам, что число завершилось и распарсим его
                     if (numberOfExpression != string.Empty) {
-                        float number = float.Parse(numberOfExpression);
+                        double number = double.Parse(numberOfExpression);
                         if (flagOfNegativeNumber) {
                             number = -number;
                             flagOfNegativeNumber = false;
@@ -83,8 +98,8 @@ namespace Calculation.bll {
                         }
                         else if(stackOfOperator.Count > 0) {
                             CalculationOper(stackOfOperator.Pop());
-                            stackOfOperator.Push(symbol);
-                        }                        
+                        }
+                        stackOfOperator.Push(symbol);
                         break;
                     case '+':
                         if (stackOfOperator.Count > 0) {
@@ -113,29 +128,29 @@ namespace Calculation.bll {
             return stackOfNumbers.Pop();
         }
 
-        float CalculationSubExpression(string subExpressionString) {
+        double CalculationSubExpression(string subExpressionString) {
             Expression subExpression = new Expression(subExpressionString);
             return subExpression.Calculation();
         }
 
-        float CalculationFunc(string functionName, float argument) {
+        double CalculationFunc(string functionName, double argument) {
             switch (functionName) {
                 case "sin":
-                    return (float)Math.Sin(argument);
+                    return Math.Sin(argument);
                 case "cos":
-                    return (float)Math.Cos(argument);
+                    return Math.Cos(argument);
                 case "tg":
-                    return (float)Math.Tan(argument);
+                    return Math.Tan(argument);
                 case "ctg":
-                    return (float)(1/Math.Tan(argument));
+                    return 1/Math.Tan(argument);
             }
             return 1;
         }
         
         void CalculationOper(char symbolOfOperator) {
 
-            float argumentSecond = stackOfNumbers.Pop();
-            float argumentFirst = stackOfNumbers.Pop();
+            double argumentSecond = stackOfNumbers.Pop();
+            double argumentFirst = stackOfNumbers.Pop();
 
             switch (symbolOfOperator) {
                 case '+':
@@ -200,26 +215,6 @@ namespace Calculation.bll {
         /// <param name="operatorSecond"></param>
         /// <returns></returns>
         bool PriorityOfOperations(char operatorFirst, char operatorSecond) {
-            if( (operatorFirst == '+') && (operatorSecond == '+') 
-                    || (operatorFirst == '-') && (operatorSecond == '-')
-                    || (operatorFirst == '*') && (operatorSecond == '*')
-                    || (operatorFirst == '/') && (operatorSecond == '/')) {
-                return false;
-            }
-
-            if ((operatorFirst == '+') && (operatorSecond == '-')
-                    || (operatorFirst == '-') && (operatorSecond == '+')
-                    || (operatorFirst == '*') && (operatorSecond == '/')
-                    || (operatorFirst == '/') && (operatorSecond == '*')) {
-                return false;
-            }
-
-            if ((operatorFirst == '+') && (operatorSecond == '*')
-                    || (operatorFirst == '-') && (operatorSecond == '/')
-                    || (operatorFirst == '+') && (operatorSecond == '/')
-                    || (operatorFirst == '-') && (operatorSecond == '*')) {
-                return false;
-            }
 
             if ((operatorFirst == '*') && (operatorSecond == '+')
                     || (operatorFirst == '/') && (operatorSecond == '-')

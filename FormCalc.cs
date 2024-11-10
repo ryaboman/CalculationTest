@@ -20,7 +20,7 @@ namespace Calculation {
         private void btnCalculation_Click(object sender, EventArgs e) {
             string expressionString = textBoxOfExpression.Text;
             Expression expression = new Expression(expressionString);
-            float result = expression.Calculation();
+            double result = expression.Calculation();
             textBoxOfResault.Text = result.ToString();
             
         }
